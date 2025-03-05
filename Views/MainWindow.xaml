@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewmodels="clr-namespace:Aexe.ViewModels"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        Title="Kaleido 多媒体管理工具" Height="600" Width="1000">
+        Title="Aexe" Height="600" Width="1000"
+        Icon="/Resources/favicon.ico">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Window.Resources>
@@ -234,4 +235,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</Window> 
+</Window>

@@ -20,8 +20,11 @@ namespace Aexe.Services
             if (!Directory.Exists(path))
                 throw new DirectoryNotFoundException($"目录不存在: {path}");
 
-            var videoFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
-                .Where(file => VideoExtensions.Contains(Path.GetExtension(file).ToLower()));
+            var videoFiles = Directory.GetFiles(path, "*.mp4", SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(path, "*.avi", SearchOption.AllDirectories))
+                .Concat(Directory.GetFiles(path, "*.mkv", SearchOption.AllDirectories))
+                .Concat(Directory.GetFiles(path, "*.mov", SearchOption.AllDirectories))
+                .Concat(Directory.GetFiles(path, "*.wmv", SearchOption.AllDirectories));
 
             foreach (var videoFile in videoFiles)
             {
@@ -51,10 +54,9 @@ namespace Aexe.Services
         private string? FindCoverImage(string directory, string videoFileName)
         {
             // 1. 首先查找与视频同名的图片
-            var sameNameImage = Directory.GetFiles(directory)
-                .FirstOrDefault(f => 
-                    ImageExtensions.Contains(Path.GetExtension(f).ToLower()) &&
-                    Path.GetFileNameWithoutExtension(f).Equals(videoFileName, StringComparison.OrdinalIgnoreCase));
+            var sameNameImage = _imageExtensions
+                .Select(ext => Path.Combine(directory, videoFileName + ext))
+                .FirstOrDefault(File.Exists);
             
             if (sameNameImage != null) return sameNameImage;
 
@@ -92,14 +94,23 @@ namespace Aexe.Services
             return await Task.Run(() => ScanDirectory(path));
         }
 
+        private readonly HashSet<string> _videoExtensions;
+        private readonly HashSet<string> _imageExtensions;
+
+        public MediaScanner()
+        {
+            _videoExtensions = new HashSet<string>(VideoExtensions, StringComparer.OrdinalIgnoreCase);
+            _imageExtensions = new HashSet<string>(ImageExtensions, StringComparer.OrdinalIgnoreCase);
+        }
+
         private bool IsVideoFile(string filePath)
         {
-            return VideoExtensions.Contains(Path.GetExtension(filePath).ToLower());
+            return _videoExtensions.Contains(Path.GetExtension(filePath));
         }
 
         private bool IsImageFile(string filePath)
         {
-            return ImageExtensions.Contains(Path.GetExtension(filePath).ToLower());
+            return _imageExtensions.Contains(Path.GetExtension(filePath));
         }
     }
 }

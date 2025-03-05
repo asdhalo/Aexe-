@@ -1,8 +1,9 @@
 <Window x:Class="Aexe.Views.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="设置" Height="500" Width="600"
-        WindowStartupLocation="CenterOwner">
+        Title="Aexe - 设置" Height="600" Width="600"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/favicon.ico">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -13,11 +14,21 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- 设置说明 -->
+        <Border Background="#FFFFFF" CornerRadius="4" Padding="10" Margin="0,0,0,15" BorderBrush="#CCCCCC" BorderThickness="1">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,5"
+                       Foreground="#333333"
+                       FontSize="14">
+                    在此页面可以配置应用程序的各项设置，包括视频播放器和扫描路径等。
+                    所有设置将在点击"确定"按钮后保存并立即生效。
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        
         <!-- 播放器设置标题 -->
-        <TextBlock Text="播放器设置" 
-                   FontSize="20" 
-                   FontWeight="Bold" 
-                   Margin="0,0,0,10"/>
+        <StackPanel Margin="0,0,0,5">
+        </StackPanel>
 
         <!-- 播放器设置 -->
         <GroupBox Grid.Row="1" Margin="0,0,0,20">
@@ -28,9 +39,13 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="播放器路径:" VerticalAlignment="Center"/>
+                    <TextBlock Text="播放器路径:" 
+                              VerticalAlignment="Center"
+                              FontSize="14"
+                              Foreground="#000000"/>
                     <TextBox Grid.Column="1" Margin="5,0,0,0" 
-                             Text="{Binding PlayerPath, UpdateSourceTrigger=PropertyChanged}"/>
+                             Text="{Binding PlayerPath, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="选择您喜欢的视频播放器程序路径"/>
                     <Button Grid.Column="2" Content="浏览" Width="60" Margin="5,0,0,0"
                             Command="{Binding BrowsePlayerCommand}"/>
                 </Grid>
@@ -40,37 +55,44 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="启动参数:" VerticalAlignment="Center"/>
+                    <TextBlock Text="启动参数:" 
+                              VerticalAlignment="Center"
+                              FontSize="14"
+                              Foreground="#000000"/>
                     <TextBox Grid.Column="1" Margin="5,0,0,0"
-                             Text="{Binding PlayerArguments, UpdateSourceTrigger=PropertyChanged}"/>
+                             Text="{Binding PlayerArguments, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="播放器的命令行参数，{0}将被替换为视频文件路径"/>
                 </Grid>
 
                 <TextBlock Margin="0,10,0,0" 
                           TextWrapping="Wrap"
-                          Foreground="#999999" 
-                          FontSize="12">
+                          Foreground="#555555" 
+                          FontSize="13">
                     提示：如果不设置播放器路径，将使用系统默认播放器。
-                    参数中使用 {0} 表示视频文件路径。
+                    参数中使用 {0} 表示视频文件路径。例如：PotPlayer的参数可以设置为"/play {0}"。
                 </TextBlock>
             </StackPanel>
         </GroupBox>
 
         <!-- 视频路径管理标题 -->
-        <TextBlock Grid.Row="2" 
-                   Text="视频路径管理" 
-                   FontSize="20" 
-                   FontWeight="Bold" 
-                   Margin="0,0,0,10"/>
+        <StackPanel Grid.Row="2" Margin="0,0,0,5">
+            <TextBlock Text="视频路径管理" 
+                       FontSize="18" 
+                       FontWeight="Bold"
+                       Foreground="#000000"
+                       Margin="0,0,0,5"/>
+        </StackPanel>
 
         <!-- 视频路径管理 -->
         <GroupBox Grid.Row="3" Margin="0,0,0,10">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-                <Grid>
+                
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -78,12 +100,15 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBox Text="{Binding NewPath, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,0,10,0"/>
+                             Margin="0,0,10,0"
+                             ToolTip="输入或选择要添加的视频文件夹路径"/>
                     <Button Grid.Column="1" Content="浏览" Width="60"
                             Command="{Binding BrowsePathCommand}"
-                            Margin="0,0,10,0"/>
+                            Margin="0,0,10,0"
+                            ToolTip="浏览并选择视频文件夹"/>
                     <Button Grid.Column="2" Content="添加" Width="60"
-                            Command="{Binding AddVideoPathCommand}"/>
+                            Command="{Binding AddVideoPathCommand}"
+                            ToolTip="将当前路径添加到扫描列表"/>
                 </Grid>
 
                 <ScrollViewer Grid.Row="1" 
@@ -110,6 +135,7 @@
                                         <TextBlock Grid.Column="1" 
                                                  Text="{Binding}" 
                                                  VerticalAlignment="Center"
+                                                 Foreground="#FFFFFF"
                                                  TextWrapping="Wrap"/>
                                         <Button Grid.Column="2" 
                                                 Content="删除" 
@@ -126,6 +152,16 @@
             </Grid>
         </GroupBox>
 
+        <!-- 应用程序首选项 -->
+        <StackPanel Grid.Row="4" Margin="0,0,0,5">
+        </StackPanel>
+                   
+        <GroupBox Grid.Row="4" Margin="0,60,0,10">
+            <StackPanel Margin="10">
+                <!-- 这里可以添加更多设置选项 -->
+            </StackPanel>
+        </GroupBox>
+        
         <!-- 按钮 -->
         <StackPanel Grid.Row="5" 
                     Orientation="Horizontal" 
@@ -134,10 +170,12 @@
             <Button Content="确定" 
                     Width="80" 
                     Margin="0,0,10,0"
-                    Command="{Binding SaveCommand}"/>
+                    Command="{Binding SaveCommand}"
+                    ToolTip="保存所有设置并关闭窗口"/>
             <Button Content="取消" 
                     Width="80"
-                    Command="{Binding CancelCommand}"/>
+                    Command="{Binding CancelCommand}"
+                    ToolTip="放弃更改并关闭窗口"/>
         </StackPanel>
     </Grid>
-</Window> 
+</Window>

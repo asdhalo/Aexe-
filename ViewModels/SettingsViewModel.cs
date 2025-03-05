@@ -110,6 +110,8 @@ namespace Aexe.ViewModels
             {
                 VideoPaths.Add(NewPath);
                 NewPath = string.Empty;
+                // 主动触发命令状态更新
+                _addVideoPathCommand?.RaiseCanExecuteChanged();
             }
         }
 
@@ -127,11 +129,12 @@ namespace Aexe.ViewModels
             {
                 PlayerPath = PlayerPath,
                 PlayerArguments = PlayerArguments,
-                VideoPaths = VideoPaths.ToList()
+                // 使用ToList创建一个新的集合副本，避免引用问题
+                VideoPaths = new List<string>(VideoPaths)
             };
 
             _settingsService.SaveSettings(settings);
             _window.DialogResult = true;
         }
     }
-} 
+}

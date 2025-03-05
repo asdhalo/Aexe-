@@ -16,6 +16,7 @@ using System.IO;
 using Aexe.ViewModels;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using WpfApplication = System.Windows.Application;
 
 namespace Aexe.ViewModels
@@ -143,40 +144,54 @@ namespace Aexe.ViewModels
 
         private void SortByDate()
         {
-            var sortedItems = _isAscending
-                ? MediaItems.OrderBy(x => x.CreatedDate)
-                : MediaItems.OrderByDescending(x => x.CreatedDate);
-
-            var items = sortedItems.ToList();
-            MediaItems.Clear();
-            foreach (var item in items)
+            // 使用List<T>的排序方法而不是LINQ，减少内存分配
+            var items = MediaItems.ToList();
+            
+            if (_isAscending)
+                items.Sort((x, y) => x.CreatedDate.CompareTo(y.CreatedDate));
+            else
+                items.Sort((x, y) => y.CreatedDate.CompareTo(x.CreatedDate));
+            
+            // 使用批量更新减少UI更新次数
+            using (CollectionViewSource.GetDefaultView(MediaItems).DeferRefresh())
             {
-                MediaItems.Add(item);
+                MediaItems.Clear();
+                foreach (var item in items)
+                {
+                    MediaItems.Add(item);
+                }
             }
-
+            
             IsAscending = !IsAscending;
         }
 
         private void FilterItems()
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
+            // 使用批量更新减少UI更新次数
+            using (CollectionViewSource.GetDefaultView(MediaItems).DeferRefresh())
             {
                 MediaItems.Clear();
-                foreach (var item in _allItems)
+                
+                if (string.IsNullOrWhiteSpace(SearchText))
                 {
-                    MediaItems.Add(item);
+                    foreach (var item in _allItems)
+                    {
+                        MediaItems.Add(item);
+                    }
                 }
-            }
-            else
-            {
-                var filtered = _allItems.Where(item =>
-                    item.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    item.FolderPath.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-
-                MediaItems.Clear();
-                foreach (var item in filtered)
+                else
                 {
-                    MediaItems.Add(item);
+                    // 预先缓存搜索文本，避免重复转换
+                    var searchTextUpper = SearchText.ToUpperInvariant();
+                    
+                    foreach (var item in _allItems)
+                    {
+                        if (item.Title.IndexOf(searchTextUpper, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            item.FolderPath.IndexOf(searchTextUpper, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            MediaItems.Add(item);
+                        }
+                    }
                 }
             }
         }
@@ -218,4 +233,4 @@ namespace Aexe.ViewModels
             }
         }
     }
-} 
+}
